@@ -84,6 +84,40 @@ class Battery:
         return self.capacity * self.number
 
  
+@dataclass
+class QuadFrame:
+    mass_vs_propd: object
+    base_vs_propd: object
+    arm_width_vs_propd: object
+    payload_height_vs_propd: object
+    bottom_compartment_height_vs_propd: object
+    top_compartment_height_vs_propd: object
+    plate_thickness_vs_propd: object
+    base: None
+
+    def __repr__(self):
+        if not self.base:
+            return QuadFrame.__repr__()
+        
+        return (f"QuadFrame(base={self.base}, weight={self.weight}, arm_width={self.arm_width} " +
+                f"payload_height={self.payload_height}, bottom_compartment_height={self.bottom_compartment_height} " +
+                f"top_compartment_height={self.top_compartment_height}, plate_thickness={self.plate_thickness})")
+    
+    def select(self, propeller_diam):
+        self.base = float(self.base_vs_propd.eval(propeller_diam))
+        self.weight = float(self.mass_vs_propd.eval(propeller_diam))*1e3
+        self.arm_width = float(self.arm_width_vs_propd.eval(propeller_diam))
+        self.payload_height = float(self.payload_height_vs_propd.eval(propeller_diam))
+        self.bottom_compartment_height = float(self.bottom_compartment_height_vs_propd.eval(propeller_diam))
+        self.top_compartment_height = float(self.top_compartment_height_vs_propd.eval(propeller_diam))
+        self.plate_thickness = float(self.plate_thickness_vs_propd.eval(propeller_diam))
+        
+        return self
+    
+    
+## Create objects
+    
+    
 propellers_polish = {f"{datarow.iloc[1]}x{datarow.iloc[2]}": Propeller(datarow) 
                      for i, datarow in scsp.LoadSubset("sbt_M1TILb8fID1O").iterrows()}   
 
@@ -93,6 +127,16 @@ propellers_glossy = {f"{datarow.iloc[1]}x{datarow.iloc[2]}": Propeller(datarow)
 
 propellers = {**propellers_polish, **propellers_glossy}
 
+
+quad_frame = QuadFrame(scsp.LoadSpline("spl_Ro5GcMx8w77X"), 
+                             scsp.LoadSpline("spl_Q0fYju02AOco"),
+                             scsp.LoadSpline("spl_Zm1M3n8yfBA6"),
+                             scsp.LoadSpline("spl_VQP8mI1oQArt"),
+                             scsp.LoadSpline("spl_2IP3hOy7pq4S"),
+                             scsp.LoadSpline("spl_oi5OSivXMmhn"),
+                             scsp.LoadSpline("spl_j2ULEsZqp32m"),
+                             None,
+                            )
 
 motors = [
     # U11II
