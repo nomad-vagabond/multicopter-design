@@ -72,7 +72,7 @@ class Battery:
         self.weight = battery_props.iloc[-1]
     
     def __repr__(self):
-        return (f"Battery(name={self.name}, capacity={self.capacity}, s={self.svalue} " +
+        return (f"Battery(name={self.name}, capacity={self.capacity}, s={self.svalue}, " +
                 f"number={self.number}, total_weight={self.total_weight}, total_capacity={self.total_capacity})")
     
     @property
